@@ -1,0 +1,111 @@
+     1                                  %include "gt.asm"
+     2                              <1> extern GetStdHandle, WriteFile, ReadFile, CreateFileA, CloseHandle,
+     3                              <1>  ExitProcess
+     4                              <1> %macro   covar 0.nolist
+     5                              <1> [section .data]
+     6                              <1>          times 100 dd 0
+     7                              <1> mvpad:   db '.\',__FILE__
+     8                              <1> mvnapad: db 0
+     9                              <1> %endmacro
+    10                              <1> 
+    11                              <1> %macro   openin   0.nolist         
+    12                              <1> extern openisr
+    13                              <1>          push dword mvpad
+    14                              <1>          push dword mvnapad
+    15                              <1>          call openisr
+    16                              <1> %endmacro
+    17                              <1> 
+    18                              <1> %macro   openuit  0.nolist
+    19                              <1> extern openusr
+    20                              <1>          push dword mvpad
+    21                              <1>          push dword mvnapad
+    22                              <1>          call openusr
+    23                              <1> %endmacro
+    24                              <1> 
+    25                              <1> %macro   schrijf  0.nolist         
+    26                              <1> extern schrsr
+    27                              <1>          push dword outarea
+    28                              <1>          push dword 72
+    29                              <1>          call schrsr
+    30                              <1> %endmacro
+    31                              <1> 
+    32                              <1> %macro   uit 1.nolist
+    33                              <1> extern uitsr
+    34                              <1>          push esi
+    35                              <1>          lea esi, %1
+    36                              <1>          push  esi
+    37                              <1>          call uitsr
+    38                              <1>          pop esi
+    39                              <1> %endmacro
+    40                              <1> 
+    41                              <1> %macro  inv 1.nolist       
+    42                              <1> ;deze macro leest een getal in van het scherm; 
+    43                              <1> ;het getal staat daarna in binaire vorm in %1
+    44                              <1> extern invsr
+    45                              <1>          push esi
+    46                              <1>          lea esi,%1
+    47                              <1>          push  esi
+    48                              <1>          call invsr
+    49                              <1>          pop esi
+    50                              <1> %endmacro         
+    51                              <1> 
+    52                              <1> %macro  lees 0.nolist
+    53                              <1> extern leessr
+    54                              <1>         push dword inarea
+    55                              <1>         call leessr
+    56                              <1> %endmacro         
+    57                              <1> 
+    58                              <1> %macro  inleiding 0.nolist
+    59                              <1> [section .code]
+    60                              <1> 
+    61                              <1> start:
+    62                              <1> %endmacro
+    63                              <1> 
+    64                              <1> %macro   slot 0.nolist
+    65                              <1> extern sluitsr
+    66                              <1>          call sluitsr
+    67                              <1> %endmacro
+    68                              <1> 
+    69                              <1> %macro   tekstbin 0.nolist
+    70                              <1> ;De externe inhoud vanaf adres in ESI wordt omgerekend naar binair. 
+    71                              <1> ;Het aantal bytes moet in ECX staan.
+    72                              <1> ;Het resultaat komt in EAX.
+    73                              <1> 
+    74                              <1> extern tkstbsr
+    75                              <1>          call tkstbsr
+    76                              <1> %endmacro         
+    77                              <1> 
+    78 00000000 00000000<rept>2E5C-     covar
+    79 00000192 6F6566317037332E61-
+    80 0000019B 736D00             
+    81 0000019E <res 00000028>          getal:	resd 10
+    82          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
+    83 000001C6 <res 00000004>          som:	resd 1
+    84          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
+    85 000001CA <res 00000004>          gem:	resd 1
+    86          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
+    87 000001CE 0A000000                teller: dd 10
+    88 000001D2 0A000000                tien:	dd 10
+    89                                  een:
+    90                                  
+    91                                  inleiding
+    92 00000000 29C0                    	SUB EAX,EAX ; in EAX komt de som
+    93 00000002 29FF                    	SUB EDI,EDI ; EDI zal als indexregister gebruikt worden
+    94                                  	
+    95 00000004 8B0D[CE010000]          	MOV ECX,[teller]
+    96                                  
+    97 0000000A 568DB7[9E010000]56-     hoger:	inv[getal+EDI]
+    98 00000012 E8(00000000)5E     
+    99 00000018 81C704000000            		add EDI,4 ; indexreg +4
+   100 0000001E 81E901000000            		sub ECX , 1
+   101 00000024 75E4                    		jnz hoger
+   102                                  		
+   103                                  		; bereken gemiddelde
+   104 00000026 F72D[D6010000]          		imul dword [een]
+   105 0000002C F73D[D2010000]          		idiv dword [tien]
+   106 00000032 A3[CA010000]            		mov [gem],EAX
+   107 00000037 568D35[CA010000]56-     		uit[gem]
+   108 0000003F E8(00000000)5E     
+   109                                  	
+   110                                  	
+   111 00000045 E8(00000000)            slot
