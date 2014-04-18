@@ -14,6 +14,7 @@ inleiding
 	MOV ECX,[teller]
 
 hoger:	inv[getal+EDI]
+		add EAX,[getal+EDI]
 		add EDI,4 ; indexreg +4
 		sub ECX , 1
 		jnz hoger

@@ -76,37 +76,46 @@
     76                              <1> %endmacro         
     77                              <1> 
     78 00000000 00000000<rept>2E5C-     covar
-    79 00000192 6F6566317037332E61-
-    80 0000019B 736D00             
-    81 0000019E <res 00000028>          getal:	resd 10
+    79 00000192 7662327037322E6173-
+    80 0000019B 6D00               
+    81 0000019D <res 00000028>          getal:	resd 10
     82          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
-    83 000001C6 <res 00000004>          som:	resd 1
+    83 000001C5 <res 00000004>          gem:	resd 1
     84          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
-    85 000001CA <res 00000004>          gem:	resd 1
+    85 000001C9 <res 00000004>          hulp:	resd 1
     86          ******************       warning: uninitialised space declared in non-BSS section `.data': zeroing
-    87 000001CE 0A000000                teller: dd 10
-    88 000001D2 0A000000                tien:	dd 10
-    89                                  een:
-    90                                  
-    91                                  inleiding
-    92 00000000 29C0                    	SUB EAX,EAX ; in EAX komt de som
-    93 00000002 29FF                    	SUB EDI,EDI ; EDI zal als indexregister gebruikt worden
-    94                                  	
-    95 00000004 8B0D[CE010000]          	MOV ECX,[teller]
-    96                                  
-    97 0000000A 568DB7[9E010000]56-     hoger:	inv[getal+EDI]
-    98 00000012 E8(00000000)5E     
-    99 00000018 0387[9E010000]          		add EAX,[getal+EDI]
-   100 0000001E 81C704000000            		add EDI,4 ; indexreg +4
-   101 00000024 81E901000000            		sub ECX , 1
-   102 0000002A 75DE                    		jnz hoger
-   103                                  		
-   104                                  		; bereken gemiddelde
-   105 0000002C F72D[D6010000]          		imul dword [een]
-   106 00000032 F73D[D2010000]          		idiv dword [tien]
-   107 00000038 A3[CA010000]            		mov [gem],EAX
-   108 0000003D 568D35[CA010000]56-     		uit[gem]
-   109 00000045 E8(00000000)5E     
-   110                                  	
-   111                                  	
-   112 0000004B E8(00000000)            slot
+    87 000001CD 01000000                een:	dd 1
+    88 000001D1 0A000000                tien:	dd 10
+    89                                  inleiding
+    90 00000000 29C0                    	SUB EAX,EAX ; in EAX komt de som
+    91 00000002 29FF                    	SUB EDI,EDI ; EDI zal als indexregister gebruikt worden
+    92                                  	
+    93 00000004 8B0D[D1010000]          	mov ECX,[tien]
+    94 0000000A 568DB7[9D010000]56-     hoger:	inv[getal+EDI]
+    95 00000012 E8(00000000)5E     
+    96 00000018 0387[9D010000]          	add EAX,[getal+EDI]
+    97 0000001E 81C704000000            	add EDI,4 ; indexreg +4
+    98 00000024 81E901000000            	SUB ecx, 1
+    99 0000002A 75DE                    	jnz hoger
+   100                                  	
+   101 0000002C F72D[CD010000]          	imul dword [een]
+   102 00000032 F73D[D1010000]          	idiv dword [tien]
+   103 00000038 A3[C5010000]            	mov [gem],EAX
+   104 0000003D 568D35[C5010000]56-     	uit[gem]
+   105 00000045 E8(00000000)5E     
+   106                                  	
+   107 0000004B 29FF                    	sub EDI,EDI ; voor indexregister
+   108 0000004D B90A000000              	mov ECX,10 ; in ECX de teller
+   109                                  
+   110 00000052 8B87[9D010000]          lus:	mov eax,[getal+EDI] ; inhoud van EAX is de inhoud van
+   111                                  							; van het dubbelwoord met adres getal+inh.EDI
+   112 00000058 2B05[C5010000]          		sub EAX,[gem]
+   113 0000005E A3[C9010000]            		mov [hulp],EAX
+   114 00000063 568D35[C9010000]56-     		uit[hulp]
+   115 0000006B E8(00000000)5E     
+   116 00000071 81C704000000            		add EDI,4
+   117 00000077 81E901000000            		sub ECX,1
+   118 0000007D 75D3                    		jnz lus
+   119                                  		
+   120                                  
+   121 0000007F E8(00000000)            slot
